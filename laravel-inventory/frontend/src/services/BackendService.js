@@ -1,0 +1,35 @@
+import axios from "axios";
+
+
+const BackendService = axios.create({
+  baseURL: process.env.VUE_APP_URL_API,
+  withCredentials: true,
+  headers: {
+    "Content-type": "application/json",
+    "Accept": "application/json",
+  },
+});
+
+BackendService.interceptors.request.use(config => {
+
+  // อ่าน token จาก localStorage
+  let token = ''
+
+  try{
+    let userStorage = localStorage.getItem('user')
+    let userStorageJSON = JSON.parse(userStorage)
+    token = userStorageJSON['token']
+  }catch(error){
+    console.log(error);
+  }
+
+  // เช็คว่าถ้า token ไม่มีค่่าว่าง
+  if(token){
+    config.headers.Authorization = "Bearer "+token
+  }
+
+  return config
+
+})
+
+export default BackendService;
